@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VoidCode — Run what Claude writes, instantly</title>
-<meta name="description" content="VoidCode is a Chrome extension that streams code from your Claude.ai chats into a live runner, then deploys it to GitHub and Vercel.">
+<meta name="description" content="VoidCode is a Chrome extension that streams code from your Claude.ai chats into a live runner, then deploys it to GitHub and Vercel. Zero extra tokens.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -33,7 +33,6 @@
   .mono{font-family:'JetBrains Mono',monospace;}
   a{color:inherit;text-decoration:none;}
 
-  /* faint scanline / grid texture */
   body::before{
     content:"";
     position:fixed; inset:0;
@@ -48,7 +47,6 @@
 
   .wrap{max-width:1040px; margin:0 auto; padding:0 28px; position:relative; z-index:1;}
 
-  /* ── NAV ───────────────────────────── */
   nav{
     display:flex; align-items:center; justify-content:space-between;
     padding:26px 0;
@@ -63,11 +61,10 @@
   nav .links a:hover{color:var(--paper);}
   .btn-ghost{
     border:1px solid var(--line); padding:9px 16px; border-radius:7px;
-    font-size:13px; color:var(--paper); transition:border-color .15s;
+    font-size:13px; color:var(--paper); transition:border-color .15s; cursor:pointer;
   }
   .btn-ghost:hover{border-color:var(--phosphor-dim);}
 
-  /* ── HERO ──────────────────────────── */
   .hero{padding:64px 0 40px; display:grid; grid-template-columns:1.05fr 1fr; gap:56px; align-items:center;}
   .eyebrow{
     display:inline-flex; align-items:center; gap:8px;
@@ -87,21 +84,39 @@
     margin-bottom:22px;
   }
   h1 .accent{color:var(--phosphor);}
-  .sub{font-size:17px; line-height:1.6; color:var(--dim); max-width:480px; margin-bottom:32px;}
-  .cta-row{display:flex; gap:14px; align-items:center; flex-wrap:wrap;}
+  .sub{font-size:17px; line-height:1.6; color:var(--dim); max-width:480px; margin-bottom:18px;}
+
+  .token-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:13px; color:var(--amber);
+    border:1px solid rgba(255,180,84,0.25); background:rgba(255,180,84,0.06);
+    padding:7px 13px; border-radius:8px; margin-bottom:28px;
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  .waitlist-form{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
+  .waitlist-form input[type="email"]{
+    flex:1; min-width:200px;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
+    padding:13px 16px; font-size:14px; color:var(--paper); font-family:'Inter',sans-serif;
+    outline:none; transition:border-color .15s;
+  }
+  .waitlist-form input[type="email"]::placeholder{color:var(--dim);}
+  .waitlist-form input[type="email"]:focus{border-color:var(--phosphor-dim);}
   .btn-primary{
     background:var(--phosphor); color:#06140a; font-weight:700; font-size:14.5px;
     padding:13px 22px; border-radius:8px; display:inline-flex; align-items:center; gap:8px;
+    border:none; cursor:pointer;
     box-shadow:0 0 0 0 rgba(156,255,176,0.4); transition:transform .15s, box-shadow .15s;
   }
   .btn-primary:hover{transform:translateY(-1px); box-shadow:0 6px 24px rgba(156,255,176,0.18);}
-  .btn-secondary{
-    font-size:14px; color:var(--dim); display:inline-flex; align-items:center; gap:6px;
-    padding:13px 6px; transition:color .15s;
+  .btn-primary:disabled{opacity:0.6; cursor:not-allowed; transform:none;}
+  .form-note{font-size:12px; color:var(--dim);}
+  .form-success{
+    display:none; font-size:14px; color:var(--phosphor);
+    font-family:'JetBrains Mono',monospace; padding:10px 0;
   }
-  .btn-secondary:hover{color:var(--paper);}
 
-  /* ── TERMINAL / SIGNATURE ELEMENT ──── */
   .term{
     background:var(--panel); border:1px solid var(--line); border-radius:12px;
     overflow:hidden; box-shadow:0 30px 80px -30px rgba(0,0,0,0.7);
@@ -122,7 +137,6 @@
   .cursor{display:inline-block; width:7px; height:14px; background:var(--phosphor); vertical-align:middle; margin-left:2px; animation:blink 1s steps(1) infinite;}
   @keyframes blink{50%{opacity:0;}}
 
-  /* ── SECTIONS ──────────────────────── */
   section{padding:72px 0; border-top:1px solid var(--line);}
   .kicker{
     font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--phosphor-dim);
@@ -137,7 +151,13 @@
   .flow-step h3{font-size:16px; margin-bottom:8px; font-weight:600;}
   .flow-step p{color:var(--dim); font-size:14px; line-height:1.6;}
 
-  /* ── PRICING ───────────────────────── */
+  .diff-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:44px;}
+  .diff-card{border:1px solid var(--line); border-radius:12px; padding:24px 22px; background:var(--panel);}
+  .diff-icon{font-size:22px; margin-bottom:12px;}
+  .diff-card h3{font-size:15px; margin-bottom:8px; font-weight:600;}
+  .diff-card p{color:var(--dim); font-size:13.5px; line-height:1.6;}
+  .diff-card .highlight{color:var(--phosphor); font-family:'JetBrains Mono',monospace; font-size:12px; margin-top:10px; display:block;}
+
   .pricing-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
   .price-card{
     border:1px solid var(--line); border-radius:12px; padding:30px 28px; background:var(--panel);
@@ -160,10 +180,11 @@
   .price-card li:first-child{border-top:none;}
   .check{color:var(--phosphor); font-size:13px;}
 
-  /* ── FOOTER / CTA ──────────────────── */
   .closer{text-align:center; padding:90px 0 70px;}
   .closer h2{font-size:clamp(26px,3.6vw,38px); margin-bottom:16px;}
   .closer .sub{margin:0 auto 30px;}
+  .closer .waitlist-form{justify-content:center;}
+
   footer{
     border-top:1px solid var(--line); padding:28px 0; display:flex; justify-content:space-between;
     align-items:center; color:var(--dim); font-size:13px;
@@ -172,6 +193,7 @@
   @media (max-width:760px){
     .hero{grid-template-columns:1fr; gap:36px; padding-top:44px;}
     .flow{grid-template-columns:1fr;}
+    .diff-grid{grid-template-columns:1fr;}
     .pricing-grid{grid-template-columns:1fr;}
     nav .links{display:none;}
   }
@@ -185,19 +207,27 @@
     <div class="links">
       <a href="#how">How it works</a>
       <a href="#pricing">Pricing</a>
-      <a href="mailto:Voidanon16@proton.me">Contact</a>
     </div>
-    <a href="#pricing" class="btn-ghost">Get Pro — $3/mo</a>
+    <a href="#waitlist" class="btn-ghost">Get Pro — $4/mo</a>
   </nav>
 
   <section class="hero" style="border-top:none; padding-top:64px;">
     <div>
       <div class="eyebrow"><span class="dot"></span>Coming soon to the Chrome Web Store</div>
       <h1>Claude writes it.<br>VoidCode <span class="accent">runs it</span> — live.</h1>
-      <p class="sub">A Chrome extension that watches your Claude.ai chat, streams every file it writes straight into a live sandbox, and keeps it running as Claude keeps editing. No copy-paste. No "open a new tab and rebuild it yourself."</p>
-      <div class="cta-row">
-        <a href="#pricing" class="btn-primary">See pricing →</a>
-        <a href="mailto:Voidanon16@proton.me" class="btn-secondary">Get notified at launch</a>
+      <p class="sub">Watches your Claude.ai chat and streams every file it writes into a live sandbox — as it's typing. No copy-paste. No rebuilding in another tab.</p>
+
+      <div class="token-badge">
+        ⚡ Zero extra tokens — works with what Claude already generates
+      </div>
+
+      <div id="waitlist">
+        <div class="waitlist-form" id="heroForm">
+          <input type="email" id="heroEmail" placeholder="your@email.com" autocomplete="email">
+          <button class="btn-primary" onclick="submitWaitlist('heroEmail','heroForm','heroSuccess')">Get early access →</button>
+        </div>
+        <div class="form-success" id="heroSuccess">✓ You're on the list. We'll email you at launch.</div>
+        <p class="form-note">No spam. Just one email when it launches.</p>
       </div>
     </div>
 
@@ -225,20 +255,41 @@
       <div class="flow-step">
         <div class="flow-num">02</div>
         <h3>Watch it run, live</h3>
-        <p>Every edit — even a one-line rename — updates the running preview instantly, in a sandboxed tab you can reload anytime.</p>
+        <p>Every edit — even a one-line change — updates the running preview instantly, in a sandboxed tab you can reload anytime.</p>
       </div>
       <div class="flow-step">
         <div class="flow-num">03</div>
         <h3>Push to GitHub, deploy to Vercel</h3>
-        <p>When it's ready, sync straight to a GitHub repo and deploy — no terminal, no manual file juggling.</p>
+        <p>When it's ready, sync to a GitHub repo and deploy — no terminal, no manual file juggling.</p>
+      </div>
+    </div>
+
+    <div class="diff-grid">
+      <div class="diff-card">
+        <div class="diff-icon">⚡</div>
+        <h3>Zero extra tokens</h3>
+        <p>Bolt, Lovable, v0 — they all burn tokens running their own AI. VoidCode just intercepts what Claude already generated. Free.</p>
+        <span class="highlight">Your Claude plan. Nothing extra.</span>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">💬</div>
+        <h3>Lives inside Claude's UI</h3>
+        <p>No context switching. Your conversation and your running code stay in the same place the whole time.</p>
+        <span class="highlight">Native claude.ai experience.</span>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">🔄</div>
+        <h3>Updates as Claude types</h3>
+        <p>Most tools wait for the full response. VoidCode updates your preview mid-stream, so you see changes appear in real time.</p>
+        <span class="highlight">Live preview, not paste-and-pray.</span>
       </div>
     </div>
   </section>
 
   <section id="pricing">
     <div class="kicker">// pricing</div>
-    <h2>Start free. Upgrade when you outgrow it.</h2>
-    <p class="section-sub">Every project runs locally for free, forever. Pro unlocks cloud backup and shipping your work to the real world.</p>
+    <h2>Start free. Upgrade when you ship.</h2>
+    <p class="section-sub">Every project runs locally for free, forever. Pro unlocks cloud backup and deploying your work.</p>
     <div class="pricing-grid">
       <div class="price-card">
         <div class="price-tier">Free</div>
@@ -249,27 +300,32 @@
           <li><span class="check">✓</span>1 free Void Cloud sync</li>
           <li><span class="check">✓</span>1 free GitHub repo push</li>
         </ul>
-        <a href="mailto:Voidanon16@proton.me" class="btn-ghost" style="text-align:center;">Get notified at launch</a>
+        <a href="#waitlist" class="btn-ghost" style="text-align:center; display:block;">Join waitlist</a>
       </div>
       <div class="price-card pro">
         <div class="price-tier">Pro</div>
-        <div class="price-amt">$3<span>/month</span></div>
+        <div class="price-amt">$4<span>/month</span></div>
         <ul>
           <li><span class="check">✓</span>Everything in Free</li>
           <li><span class="check">✓</span>Unlimited Void Cloud sync</li>
           <li><span class="check">✓</span>Unlimited GitHub repos &amp; deploys</li>
-          <li><span class="check">✓</span>Priority sync</li>
+          <li><span class="check">✓</span>Priority support</li>
         </ul>
-        <a href="mailto:Voidanon16@proton.me" class="btn-primary" style="justify-content:center;">Get notified at launch</a>
+        <a href="#waitlist" class="btn-primary" style="justify-content:center; text-decoration:none;">Join waitlist</a>
       </div>
     </div>
   </section>
 
   <section class="closer" style="border-top:none;">
-    <div class="kicker" style="justify-content:center; display:flex;">// status</div>
-    <h2>Currently in private testing.</h2>
-    <p class="sub">VoidCode is being built and tested ahead of a Chrome Web Store launch. Want early access?</p>
-    <a href="mailto:Voidanon16@proton.me" class="btn-primary">Email Voidanon16@proton.me</a>
+    <div class="kicker" style="justify-content:center; display:flex;">// early access</div>
+    <h2>Stop copy-pasting. Start shipping.</h2>
+    <p class="sub">VoidCode launches on the Chrome Web Store soon. Drop your email and you'll be first to know.</p>
+    <div class="waitlist-form" id="footerForm" style="justify-content:center;">
+      <input type="email" id="footerEmail" placeholder="your@email.com" autocomplete="email">
+      <button class="btn-primary" onclick="submitWaitlist('footerEmail','footerForm','footerSuccess')">Get early access →</button>
+    </div>
+    <div class="form-success" id="footerSuccess" style="justify-content:center;">✓ You're on the list. We'll email you at launch.</div>
+    <p class="form-note" style="margin-top:10px;">No spam. Just one email when it launches.</p>
   </section>
 
   <footer>
@@ -279,16 +335,46 @@
 </div>
 
 <script>
+  // Replace with your Tally / Typeform / Formspree endpoint
+  const WAITLIST_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
+
+  async function submitWaitlist(inputId, formId, successId) {
+    const input = document.getElementById(inputId);
+    const email = (input?.value || "").trim();
+    if (!email || !email.includes("@")) { input?.focus(); return; }
+
+    const btn = input.nextElementSibling;
+    const orig = btn.textContent;
+    btn.textContent = "Joining…";
+    btn.disabled = true;
+
+    try {
+      await fetch(WAITLIST_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ email })
+      });
+    } catch (_) {}
+
+    document.getElementById(formId).style.display = "none";
+    document.getElementById(successId).style.display = "block";
+  }
+
+  document.querySelectorAll('input[type="email"]').forEach(el => {
+    el.addEventListener("keydown", e => { if (e.key === "Enter") el.nextElementSibling?.click(); });
+  });
+
+  // Terminal animation
   const lines = [
     {t:"claude.ai", c:"term-dim", suffix:" — new message received"},
-    {t:"create_file", c:"term-tag", suffix:"  path=\"lexis.html\""},
+    {t:"create_file", c:"term-tag", suffix:"  path=\"app.html\""},
     {t:"  └─ streaming", c:"term-dim", suffix:" 1.2kb / 4.8kb..."},
     {t:"  └─ done", c:"term-str", suffix:" ✓ runner updated (12ms)"},
     {t:"", c:"term-dim", suffix:""},
-    {t:"str_replace", c:"term-tag", suffix:"  path=\"lexis.html\""},
+    {t:"str_replace", c:"term-tag", suffix:"  path=\"app.html\""},
     {t:"  └─ patched", c:"term-str", suffix:" ✓ live preview refreshed"},
     {t:"", c:"term-dim", suffix:""},
-    {t:"sync", c:"term-tag", suffix:"  → github.com/you/lexis"},
+    {t:"sync", c:"term-tag", suffix:"  → github.com/you/app"},
     {t:"  └─ pushed", c:"term-str", suffix:" ✓ deployed to vercel"},
   ];
   const body = document.getElementById('termBody');
